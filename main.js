@@ -1,11 +1,14 @@
 function load() {
+	const cards = [];
+
 	let html = '';
 	for (let row = 0; row < 4; row++) {
 		html += '<tr>';
 		for (let col = 0; col < 3; col++) {
-			let imageFileName =
-				[1, 2, 3][rand()] + 'fos'[rand()] + 'gpr'[rand()] + 'dos'[rand()];
-			html += `<td><img src="img/${imageFileName}.jpg"/></td>`;
+			const card =
+				'123'[rand()] + 'fos'[rand()] + 'gpr'[rand()] + 'dos'[rand()];
+			cards.push(card);
+			html += `<td><img id="card-${card}" src="img/${card}.jpg"/></td>`;
 		}
 		html += '</tr>';
 	}
