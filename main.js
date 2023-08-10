@@ -32,30 +32,30 @@ function load() {
 
 function findSet(cards) {
 	for (const card1 of cards) {
-		const attributes1 = [];
-		attributes1.push('123'.indexOf(card1[0]));
-		attributes1.push('fos'.indexOf(card1[1]));
-		attributes1.push('gpr'.indexOf(card1[2]));
-		attributes1.push('dos'.indexOf(card1[3]));
+		const attributes1 = getAttributes(card1);
 		for (const card2 of cards) {
 			if (card1 != card2) {
-				const attributes2 = [];
-				attributes2.push('123'.indexOf(card2[0]));
-				attributes2.push('fos'.indexOf(card2[1]));
-				attributes2.push('gpr'.indexOf(card2[2]));
-				attributes2.push('dos'.indexOf(card2[3]));
-
-				let card3 = '';
-				card3 += '123'[(3 - ((attributes1[0] + attributes2[0]) % 3)) % 3];
-				card3 += 'fos'[(3 - ((attributes1[1] + attributes2[1]) % 3)) % 3];
-				card3 += 'gpr'[(3 - ((attributes1[2] + attributes2[2]) % 3)) % 3];
-				card3 += 'dos'[(3 - ((attributes1[3] + attributes2[3]) % 3)) % 3];
+				const attributes2 = getAttributes(card2);
+				const card3 =
+					'123'[(3 - ((attributes1[0] + attributes2[0]) % 3)) % 3] +
+					'fos'[(3 - ((attributes1[1] + attributes2[1]) % 3)) % 3] +
+					'gpr'[(3 - ((attributes1[2] + attributes2[2]) % 3)) % 3] +
+					'dos'[(3 - ((attributes1[3] + attributes2[3]) % 3)) % 3];
 				if (cards.includes(card3)) {
 					return [card1, card2, card3];
 				}
 			}
 		}
 	}
+}
+
+function getAttributes(card) {
+	const attributes = [];
+	attributes.push('123'.indexOf(card[0]));
+	attributes.push('fos'.indexOf(card[1]));
+	attributes.push('gpr'.indexOf(card[2]));
+	attributes.push('dos'.indexOf(card[3]));
+	return attributes;
 }
 
 function rand() {
