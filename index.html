@@ -14,6 +14,12 @@
 				font-family: Lato;
 			}
 
+			#container {
+				margin-left: auto;
+				margin-right: auto;
+				width: 380px;
+			}
+
 			#game-board img {
 				width: 120px;
 				height: 80px;
@@ -38,11 +44,13 @@
 		</style>
 	</head>
 	<body onload="load()">
-		<div id="game-board-container">
-			<table id="game-board"></table>
-		</div>
-		<div id="num-sets-container">
-			Num sets found: <span id="num-sets">0</span>
+		<div id="container">
+			<div id="game-board-container">
+				<table id="game-board"></table>
+			</div>
+			<div id="num-sets-container">
+				Num sets found: <span id="num-sets">0</span>
+			</div>
 		</div>
 	</body>
 </html>

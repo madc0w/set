@@ -13,7 +13,6 @@ function load() {
 	let numSets = 0;
 	const intervalId = setInterval(() => {
 		const set = findSet(cards);
-		// console.log(set);
 		if (set) {
 			numSets++;
 			document.getElementById('num-sets').innerHTML = numSets;
@@ -54,12 +53,12 @@ function findSet(cards) {
 }
 
 function getAttributes(card) {
-	const attributes = [];
-	attributes.push('123'.indexOf(card[0]));
-	attributes.push('fos'.indexOf(card[1]));
-	attributes.push('gpr'.indexOf(card[2]));
-	attributes.push('dos'.indexOf(card[3]));
-	return attributes;
+	return [
+		'123'.indexOf(card[0]),
+		'fos'.indexOf(card[1]),
+		'gpr'.indexOf(card[2]),
+		'dos'.indexOf(card[3]),
+	];
 }
 
 function randomCard(cards) {
