@@ -11,6 +11,7 @@
 		<style>
 			body {
 				background-color: antiquewhite;
+				font-family: Lato;
 			}
 
 			#game-board img {
@@ -18,20 +19,27 @@
 				height: 80px;
 				border-radius: 12px;
 				margin: 8px;
-				border-width: 2px;
+				border-width: 3px;
 				border-style: solid;
 				border-color: darkgray;
 			}
 
 			#game-board img.set-element {
 				border-color: red;
-				border-width: 4px;
+				border-width: 3px;
+			}
+
+			#num-sets-container {
+				font-size: 22px;
 			}
 		</style>
 	</head>
 	<body onload="load()">
 		<div id="game-board-container">
 			<table id="game-board"></table>
+		</div>
+		<div id="num-sets-container">
+			Num sets found: <span id="num-sets">0</span>
 		</div>
 	</body>
 </html>

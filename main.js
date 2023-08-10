@@ -1,33 +1,37 @@
+const numCards = 12;
+
+// const testSet = findSet(['3sgd', '1oro', '3srs']);
+// console.log(testSet);
+
 function load() {
-	const testSet = findSet(['3sgd', '1oro', '3srs']);
-	console.log(testSet);
-
 	const cards = [];
-
-	let html = '';
-	for (let row = 0; row < 4; row++) {
-		html += '<tr>';
-		for (let col = 0; col < 3; col++) {
-			let card;
-			do {
-				card = '123'[rand()] + 'fos'[rand()] + 'gpr'[rand()] + 'dos'[rand()];
-			} while (cards.includes(card));
-			cards.push(card);
-			html += `<td><img id="card-${card}" src="img/${card}.jpg"/></td>`;
-		}
-		html += '</tr>';
+	for (let i = 0; i < numCards; i++) {
+		cards.push(randomCard(cards));
 	}
-	const gameBoardTable = document.getElementById('game-board');
-	gameBoardTable.innerHTML = html;
+	drawBoard(cards);
 
-	const set = findSet(cards);
-	// console.log(set);
-	if (set) {
-		for (const card of set) {
-			const img = document.getElementById(`card-${card}`);
-			img.classList.add('set-element');
+	let numSets = 0;
+	const intervalId = setInterval(() => {
+		const set = findSet(cards);
+		// console.log(set);
+		if (set) {
+			numSets++;
+			document.getElementById('num-sets').innerHTML = numSets;
+			for (const card of set) {
+				const img = document.getElementById(`card-${card}`);
+				img.classList.add('set-element');
+			}
+			setTimeout(() => {
+				for (const setItem of set) {
+					cards[cards.indexOf(setItem)] = randomCard(cards);
+				}
+				drawBoard(cards);
+			}, 2000);
+		} else {
+			clearInterval(intervalId);
+			document.getElementById('num-sets').innerHTML += ' - all done!';
 		}
-	}
+	}, 2800);
 }
 
 function findSet(cards) {
@@ -56,6 +60,28 @@ function getAttributes(card) {
 	attributes.push('gpr'.indexOf(card[2]));
 	attributes.push('dos'.indexOf(card[3]));
 	return attributes;
+}
+
+function randomCard(cards) {
+	let card;
+	do {
+		card = '123'[rand()] + 'fos'[rand()] + 'gpr'[rand()] + 'dos'[rand()];
+	} while (cards.includes(card));
+	return card;
+}
+
+function drawBoard(cards) {
+	let html = '';
+	for (let row = 0; row < 4; row++) {
+		html += '<tr>';
+		for (let col = 0; col < 3; col++) {
+			const card = cards[3 * row + col];
+			html += `<td><img id="card-${card}" src="img/${card}.jpg"/></td>`;
+		}
+		html += '</tr>';
+	}
+	const gameBoardTable = document.getElementById('game-board');
+	gameBoardTable.innerHTML = html;
 }
 
 function rand() {
