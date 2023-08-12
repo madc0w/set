@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="icon" type="image/x-icon" href="img/favicon.jpg" />
+		<link
+			href="https://fonts.googleapis.com/css?family=Lato"
+			rel="stylesheet"
+		/>
+		<script src="solver.js"></script>
+		<style>
+			body {
+				background-color: antiquewhite;
+				font-family: Lato;
+			}
+
+			canvas {
+				display: none;
+			}
+
+			button {
+				border-radius: 8px;
+				padding: 8px;
+				width: 100%;
+				margin: 8px;
+			}
+
+			#headline {
+				font-weight: bold;
+			}
+
+			.hidden {
+				display: none;
+			}
+
+			video {
+				border-radius: 4px;
+				width: 100%;
+				height: 400px;
+			}
+
+			#grid {
+				position: absolute;
+				width: 536px;
+				height: 400px;
+				margin-left: 140px;
+			}
+
+			#grid td {
+				border-width: 3px;
+				border-style: solid;
+				border-color: black;
+				border-radius: 6px;
+			}
+		</style>
+	</head>
+	<body>
+		<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+
+		<div id="headline">Set Solver</div>
+
+		<table id="grid" class="hidden">
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+		</table>
+
+		<div id="video-container" class="hidden">
+			<video autoplay></video>
+		</div>
+		<button id="start-button" type="button" onclick="start()">Start</button>
+		<button id="solve-button" type="button" class="hidden" onclick="solve()">
+			Solve it for me
+		</button>
+		<div>
+			<canvas id="canvas" width="536" height="400"></canvas>
+		</div>
+		<div id="prediction"></div>
+	</body>
+</html>
