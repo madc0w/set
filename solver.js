@@ -9,6 +9,19 @@ let model, webcam, maxPredictions, canvas;
 // Load the image model and setup the webcam
 async function start() {
 	const video = document.querySelector('video');
+	video.addEventListener('loadedmetadata', function () {
+		const videoSize = {
+			width: video.videoWidth,
+			height: video.videoHeight,
+		};
+		const videoEl = document.getElementsByTagName('video')[0];
+		const videoStyle = (style = window.getComputedStyle(videoEl));
+		const grid = document.getElementById('grid');
+		const width = videoStyle.getPropertyValue('width');
+		grid.style.width = width;
+		grid.style.height =
+			(parseInt(width) * videoSize.height) / videoSize.width + 'px';
+	});
 
 	navigator.mediaDevices
 		.getUserMedia({
@@ -24,12 +37,6 @@ async function start() {
 			document.getElementById('detect-button').classList.remove('hidden');
 			document.getElementById('video-container').classList.remove('hidden');
 			document.getElementById('grid').classList.remove('hidden');
-
-			const videoEl = document.getElementsByTagName('video')[0];
-			const videoStyle = (style = window.getComputedStyle(videoEl));
-			const grid = document.getElementById('grid');
-			grid.style.width = videoStyle.getPropertyValue('width');
-			grid.style.height = videoStyle.getPropertyValue('height');
 			return navigator.mediaDevices.enumerateDevices();
 		})
 		.then((gotDevices) => {
