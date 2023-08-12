@@ -11,7 +11,11 @@ async function start() {
 	const video = document.querySelector('video');
 
 	navigator.mediaDevices
-		.getUserMedia({ video: true })
+		.getUserMedia({
+			video: {
+				facingMode: 'environment',
+			},
+		})
 		.then((stream) => {
 			video.srcObject = stream;
 			document.getElementById('start-button').classList.add('hidden');
