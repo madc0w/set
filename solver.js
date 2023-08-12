@@ -12,6 +12,7 @@ async function start() {
 
 	navigator.mediaDevices
 		.getUserMedia({
+			audio: false,
 			video: {
 				facingMode: { exact: 'environment' },
 			},
