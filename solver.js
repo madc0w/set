@@ -14,15 +14,22 @@ async function start() {
 		.getUserMedia({
 			audio: false,
 			video: {
-				facingMode: { exact: 'environment' },
+				// facingMode: { exact: 'environment' },
+				facingMode: 'environment',
 			},
 		})
 		.then((stream) => {
 			video.srcObject = stream;
 			document.getElementById('start-button').classList.add('hidden');
-			document.getElementById('solve-button').classList.remove('hidden');
+			document.getElementById('detect-button').classList.remove('hidden');
 			document.getElementById('video-container').classList.remove('hidden');
 			document.getElementById('grid').classList.remove('hidden');
+
+			const videoEl = document.getElementsByTagName('video')[0];
+			const videoStyle = (style = window.getComputedStyle(videoEl));
+			const grid = document.getElementById('grid');
+			grid.style.width = videoStyle.getPropertyValue('width');
+			grid.style.height = videoStyle.getPropertyValue('height');
 			return navigator.mediaDevices.enumerateDevices();
 		})
 		.then((gotDevices) => {
@@ -64,7 +71,7 @@ async function start() {
 	// }
 }
 
-async function solve() {
+async function detectCards() {
 	const maxWidth = 536;
 	const maxHeight = 400;
 	const width = maxWidth / 4;

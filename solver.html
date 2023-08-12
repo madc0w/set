@@ -33,16 +33,14 @@
 			}
 
 			video {
-				border-radius: 4px;
+				border-radius: 8px;
 				width: 100%;
-				height: 400px;
+				height: 90vh;
 			}
 
 			#grid {
 				position: absolute;
-				width: 536px;
-				height: 400px;
-				margin-left: calc(50% - 277px);
+				/* margin-left: calc(50% - 277px); */
 			}
 
 			#grid td {
@@ -84,8 +82,13 @@
 			<video autoplay></video>
 		</div>
 		<button id="start-button" type="button" onclick="start()">Start</button>
-		<button id="solve-button" type="button" class="hidden" onclick="solve()">
-			Solve it for me
+		<button
+			id="detect-button"
+			type="button"
+			class="hidden"
+			onclick="detectCards()"
+		>
+			Detect Cards
 		</button>
 		<div>
 			<canvas id="canvas" width="536" height="400"></canvas>
