@@ -13,7 +13,7 @@ async function start() {
 	navigator.mediaDevices
 		.getUserMedia({
 			video: {
-				facingMode: 'environment',
+				facingMode: { exact: 'environment' },
 			},
 		})
 		.then((stream) => {
