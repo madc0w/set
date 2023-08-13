@@ -1,10 +1,8 @@
 // More API functions here:
 // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
 
-// the link to your model provided by Teachable Machine export panel
-const URL = 'https://madc0w.github.io/set/model/';
-
-let model, webcam, maxPredictions, canvas, isDetectingCards, predictions;
+let model, webcam, maxPredictions, canvas, predictions;
+let detectedCards = {};
 
 async function start() {
 	const video = document.querySelector('video');
@@ -20,7 +18,6 @@ async function start() {
 		.then((stream) => {
 			video.srcObject = stream;
 			document.getElementById('start-button').classList.add('hidden');
-			document.getElementById('detect-button').classList.remove('hidden');
 			document.getElementById('video-container').classList.remove('hidden');
 			return navigator.mediaDevices.enumerateDevices();
 		})
@@ -32,53 +29,31 @@ async function start() {
 		});
 
 	canvas = document.getElementById('video-canvas');
-	setInterval(() => {
+	setInterval(async () => {
 		const context = canvas.getContext('2d');
 		context.font = '32px Arial';
 		context.style = '#000';
-		if (isDetectingCards) {
-			for (let x = 0; x < 4; x++) {
-				for (let y = 0; y < 3; y++) {
-					const prediction = predictions[`${x}-${y}`];
-					// console.log(prediction);
-					context.fillStyle = '#fff';
-					context.fillRect(
-						(x * canvas.width) / 4,
-						(y * canvas.height) / 3 + 40,
-						200,
-						60
-					);
-					context.fillStyle = '#000';
-					console.log(`${x} ${y}`, prediction[0]);
-					context.fillText(
-						`${prediction[0].className} ${prediction[0].probability.toFixed(
-							2
-						)}`,
-						(x * canvas.width) / 4 + 8,
-						(y * canvas.height) / 3 + 80
-					);
-				}
-			}
-		} else {
-			context.drawImage(video, 0, 0, canvas.width, canvas.height);
-		}
+		context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-		for (let x = 1; x < 4; x++) {
-			context.beginPath();
-			context.moveTo((x * canvas.width) / 4, 0);
-			context.lineTo((x * canvas.width) / 4, canvas.height);
-			context.stroke();
-		}
-		for (let y = 1; y < 3; y++) {
-			context.beginPath();
-			context.moveTo(0, (y * canvas.height) / 3);
-			context.lineTo(canvas.width, (y * canvas.height) / 3);
-			context.stroke();
+		if (model) {
+			const predictions = await predict(canvas);
+			// console.log('best prediction', predictions[0]);
+			if (
+				predictions[0].probability > 0.9 &&
+				Object.keys(detectedCards).length < 12
+			) {
+				const detectedCard = predictions[0].className;
+				// console.log('detected ', detectedCard);
+				detectedCards[detectedCard] = predictions;
+				renderDetectedCards();
+			}
 		}
 	}, 80);
 
-	const modelURL = URL + 'model.json';
-	const metadataURL = URL + 'metadata.json';
+	// the link to model provided by Teachable Machine export panel
+	const baseUrl = 'https://madc0w.github.io/set/model/';
+	const modelURL = baseUrl + 'model.json';
+	const metadataURL = baseUrl + 'metadata.json';
 
 	// Refer to tmImage.loadFromFiles() in the API to support files from a file picker
 	// or files from your local hard drive
@@ -87,49 +62,12 @@ async function start() {
 	maxPredictions = model.getTotalClasses();
 }
 
-async function detectCards() {
-	const width = canvas.width / 4;
-	const height = canvas.height / 3;
-
-	predictions = {};
-	for (let x = 0; x < 4; x++) {
-		for (let y = 0; y < 3; y++) {
-			const clip = getClippedCanvas(
-				canvas,
-				x * width,
-				y * height,
-				width,
-				height
-			);
-			document.getElementById(`clip-${x}-${y}`).appendChild(clip.image);
-			predictions[`${x}-${y}`] = await predict(clip.canvas);
-			// console.log(x, y, prediction);
-		}
-	}
-	isDetectingCards = true;
-	// document.getElementById('clips').classList.remove('hidden');
-}
-
 async function predict(input) {
 	// predict can take in an image, video or canvas html element
 	if (input) {
 		const predictions = await model.predict(input);
-		predictions.sort((a, b) => (a.probability > b.probability ? 1 : -1));
+		predictions.sort((a, b) => (a.probability < b.probability ? 1 : -1));
 		return predictions;
-		// let maxProb = {
-		// 	label: null,
-		// 	prob: 0,
-		// };
-		// for (let i = 0; i < maxPredictions; i++) {
-		// 	if (predictions[i].probability > maxProb.prob) {
-		// 		maxProb.prob = predictions[i].probability;
-		// 		maxProb.label = predictions[i].className;
-		// 	}
-		// }
-		// return maxProb;
-		// document.getElementById('prediction').innerHTML = `${
-		// 	maxProb.label
-		// } (${maxProb.prob.toFixed(2)})`;
 	}
 }
 
@@ -145,4 +83,76 @@ function getClippedCanvas(sourceCanvas, x, y, width, height) {
 		canvas: tempCanvas,
 		image,
 	};
+}
+
+function renderDetectedCards() {
+	const detectedCardsTable = document.getElementById('detected-cards-table');
+	let html = '<tr>';
+	let i = 0;
+	const detectedCardsArray = Object.keys(detectedCards);
+	while (detectedCardsArray.length < 12) {
+		detectedCardsArray.push(null);
+	}
+	for (const card of detectedCardsArray) {
+		html += '<td>';
+		if (card) {
+			html += `<img src="img/${card}.jpg" id="detected-card-${card}" onclick="chooseCard('${card}')"/>`;
+		}
+		html += '</td>';
+		i++;
+		if (i % 4 == 0) {
+			html += '</tr><tr>';
+		}
+	}
+	html += '</tr>';
+	detectedCardsTable.innerHTML = html;
+}
+
+function chooseCard(card) {
+	openModal('choose-card-modal');
+
+	const cardChoicesTable = document.getElementById('card-choices-table');
+	let html = '';
+	if (detectedCards[card]) {
+		for (const prediction of detectedCards[card]) {
+			html += `<tr><td><img src="img/${
+				prediction.className
+			}.jpg" id="detected-card-${card}" onclick="replaceCard('${card}', '${
+				prediction.className
+			}')"/></td><td>${(100 * prediction.probability).toFixed(1)}%</td></tr>`;
+		}
+	} else {
+		for (const num of '123') {
+			for (const fill of 'fos') {
+				for (const color of 'gpr') {
+					for (const shape of 'dos') {
+						const replacementCard = `${num}${fill}${color}${shape}`;
+						html += `<tr><td><img src="img/${replacementCard}.jpg" id="detected-card-${card}" onclick="replaceCard('${card}', '${replacementCard}')"/></td>`;
+					}
+				}
+			}
+		}
+	}
+	cardChoicesTable.innerHTML = html;
+}
+
+function replaceCard(card, replacementCard) {
+	delete detectedCards[card];
+	if (!detectedCards[replacementCard]) {
+		detectedCards[replacementCard] = null;
+	}
+	closeModals();
+	renderDetectedCards();
+}
+
+function openModal(id) {
+	document.getElementById(id).style.display = 'block';
+}
+
+function closeModals() {
+	const modals = document.getElementsByClassName('modal');
+	let i = 0;
+	do {
+		modals.item(i).style.display = 'none';
+	} while (modals.item(++i));
 }

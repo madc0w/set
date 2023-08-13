@@ -16,8 +16,9 @@
 			button {
 				border-radius: 8px;
 				padding: 8px;
-				width: 100%;
+				width: 96vw;
 				margin: 8px;
+				cursor: pointer;
 			}
 
 			#headline {
@@ -30,13 +31,68 @@
 
 			#video-canvas {
 				border-radius: 8px;
-				width: 100vw;
-				height: calc(100vh - 220px);
+				width: 90vw;
+				height: calc(100vh - 320px);
+				margin-left: 5vw;
+				margin-top: 8px;
 				/* height: 200px; */
 			}
 
 			#controls-container {
 				height: 60px;
+			}
+
+			#detected-cards-container {
+			}
+
+			#detected-cards-container img {
+				height: 80px;
+				cursor: pointer;
+				border-radius: 12px;
+			}
+
+			#detected-cards-table {
+				margin-left: calc(50vw - 260px);
+			}
+
+			#detected-cards-table td {
+				height: 80px;
+				width: 120px;
+				border-style: solid;
+				border-radius: 12px;
+				border-width: 2px;
+				border-color: black;
+			}
+
+			#card-choices-container {
+				overflow-y: scroll;
+				height: 382px;
+			}
+
+			#card-choices-table td img {
+				width: 120px;
+				cursor: pointer;
+			}
+
+			.modal {
+				display: none;
+				position: absolute;
+				top: 10vh;
+				left: calc(50vw - 150px);
+				height: 400px;
+				width: 300px;
+				border-radius: 8px;
+				border-style: solid;
+				border-width: 2px;
+				border-color: #222;
+				padding: 8px;
+				background-color: #fff;
+				box-shadow: 0px 0px 20px 20px #444;
+			}
+
+			.headline {
+				font-weight: bold;
+				text-align: center;
 			}
 		</style>
 	</head>
@@ -52,36 +108,16 @@
 		</div>
 		<div id="controls-container">
 			<button id="start-button" type="button" onclick="start()">Start</button>
-			<button
-				id="detect-button"
-				type="button"
-				class="hidden"
-				onclick="detectCards()"
-			>
-				Detect Cards
-			</button>
 		</div>
-		<div id="prediction"></div>
+		<div id="detected-cards-container">
+			<table id="detected-cards-table"></table>
+		</div>
 
-		<table id="clips" class="hidden">
-			<tr>
-				<td id="clip-0-0"></td>
-				<td id="clip-1-0"></td>
-				<td id="clip-2-0"></td>
-				<td id="clip-3-0"></td>
-			</tr>
-			<tr>
-				<td id="clip-0-1"></td>
-				<td id="clip-1-1"></td>
-				<td id="clip-2-1"></td>
-				<td id="clip-3-1"></td>
-			</tr>
-			<tr>
-				<td id="clip-0-2"></td>
-				<td id="clip-1-2"></td>
-				<td id="clip-2-2"></td>
-				<td id="clip-3-2"></td>
-			</tr>
-		</table>
+		<div id="choose-card-modal" class="modal">
+			<div class="headline">Choose Card</div>
+			<div id="card-choices-container">
+				<table id="card-choices-table"></table>
+			</div>
+		</div>
 	</body>
 </html>
