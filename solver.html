@@ -28,7 +28,7 @@
 			#video-canvas {
 				border-radius: 8px;
 				width: 90vw;
-				height: calc(100vh - 320px);
+				height: calc(100vh - 420px);
 				margin-left: 5vw;
 				margin-top: 8px;
 				/* height: 200px; */
@@ -36,6 +36,7 @@
 
 			#controls-container {
 				height: 60px;
+				display: flex;
 			}
 
 			#detected-cards-container {
@@ -122,6 +123,9 @@
 			<button id="solve-button" type="button" class="hidden" onclick="solve()">
 				Solve it!
 			</button>
+			<button id="reset-button" onclick="reset()" class="hidden">
+				Reset Everything
+			</button>
 		</div>
 		<div id="detected-cards-container">
 			<table id="detected-cards-table"></table>
@@ -143,7 +147,13 @@
 
 		<div id="no-set-modal" class="modal">
 			<div class="headline">No Set Here!</div>
-			<div>Life sucks, but at least it's not you're fault.</div>
+			<div>
+				Life sucks, but at least it's not you're fault.<br />
+				It's OK to cry.
+			</div>
+			<div>
+				<button id="reset-button" onclick="reset()">Reset Everything</button>
+			</div>
 		</div>
 	</body>
 </html>

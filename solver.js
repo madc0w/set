@@ -18,6 +18,7 @@ async function start() {
 		.then((stream) => {
 			video.srcObject = stream;
 			document.getElementById('start-button').classList.add('hidden');
+			document.getElementById('reset-button').classList.remove('hidden');
 			document.getElementById('video-container').classList.remove('hidden');
 			return navigator.mediaDevices.enumerateDevices();
 		})
@@ -195,6 +196,11 @@ function deleteCard() {
 	delete detectedCards[chosenCard];
 	renderDetectedCards();
 	closeModals();
+}
+
+function reset() {
+	detectedCards = [];
+	renderDetectedCards();
 }
 
 function openModal(id) {
