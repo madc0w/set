@@ -8,20 +8,27 @@ let model, webcam, maxPredictions, canvas;
 
 // Load the image model and setup the webcam
 async function start() {
-	const video = document.querySelector('video');
-	video.addEventListener('loadedmetadata', function () {
+	function sizeGrid() {
+		const video = document.querySelector('video');
 		const videoSize = {
 			width: video.videoWidth,
 			height: video.videoHeight,
 		};
-		const videoEl = document.getElementsByTagName('video')[0];
-		const videoStyle = (style = window.getComputedStyle(videoEl));
+		const videoStyle = (style = window.getComputedStyle(video));
 		const grid = document.getElementById('grid');
-		const width = videoStyle.getPropertyValue('width');
-		grid.style.width = width;
-		grid.style.height =
-			(parseInt(width) * videoSize.height) / videoSize.width + 'px';
-	});
+		// const width = parseInt(videoStyle.getPropertyValue('width'));
+		const height = parseInt(videoStyle.getPropertyValue('height'));
+		grid.style.width = (height * videoSize.width) / videoSize.height + 'px';
+		grid.style.height = height + 'px';
+		// console.log('width, height', width, height);
+		// console.log('videoSize', videoSize);
+		grid.style.left =
+			(innerWidth - (height * videoSize.width) / videoSize.height) / 2 + 'px';
+	}
+
+	const video = document.querySelector('video');
+	video.addEventListener('loadedmetadata', sizeGrid);
+	window.addEventListener('resize', sizeGrid);
 
 	navigator.mediaDevices
 		.getUserMedia({
@@ -39,9 +46,9 @@ async function start() {
 			document.getElementById('grid').classList.remove('hidden');
 			return navigator.mediaDevices.enumerateDevices();
 		})
-		.then((gotDevices) => {
-			// Process for the list of returned devices and get a handle on the video stream
-		})
+		// .then((gotDevices) => {
+		// 	// Process for the list of returned devices and get a handle on the video stream
+		// })
 		.catch((error) => {
 			console.error('Error accessing media devices.', error);
 		});
