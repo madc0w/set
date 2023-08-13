@@ -13,10 +13,6 @@
 				font-family: Lato;
 			}
 
-			canvas {
-				display: none;
-			}
-
 			button {
 				border-radius: 8px;
 				padding: 8px;
@@ -32,23 +28,11 @@
 				display: none;
 			}
 
-			video {
+			#video-canvas {
 				border-radius: 8px;
-				width: 100%;
+				width: 100vw;
 				height: calc(100vh - 220px);
 				/* height: 200px; */
-			}
-
-			#grid {
-				position: absolute;
-				/* margin-left: calc(50% - 277px); */
-			}
-
-			#grid td {
-				border-width: 3px;
-				border-style: solid;
-				border-color: black;
-				border-radius: 6px;
 			}
 
 			#controls-container {
@@ -63,27 +47,8 @@
 		<div id="headline">Set Solver</div>
 
 		<div id="video-container" class="hidden">
-			<table id="grid" class="hidden">
-				<tr>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
-				<tr>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
-				<tr>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
-			</table>
-			<video autoplay></video>
+			<video class="hidden" autoplay></video>
+			<canvas id="video-canvas" width="1200" height="1200"></canvas>
 		</div>
 		<div id="controls-container">
 			<button id="start-button" type="button" onclick="start()">Start</button>
@@ -96,9 +61,27 @@
 				Detect Cards
 			</button>
 		</div>
-		<div>
-			<canvas id="canvas" width="536" height="400"></canvas>
-		</div>
 		<div id="prediction"></div>
+
+		<table id="clips" class="hidden">
+			<tr>
+				<td id="clip-0-0"></td>
+				<td id="clip-1-0"></td>
+				<td id="clip-2-0"></td>
+				<td id="clip-3-0"></td>
+			</tr>
+			<tr>
+				<td id="clip-0-1"></td>
+				<td id="clip-1-1"></td>
+				<td id="clip-2-1"></td>
+				<td id="clip-3-1"></td>
+			</tr>
+			<tr>
+				<td id="clip-0-2"></td>
+				<td id="clip-1-2"></td>
+				<td id="clip-2-2"></td>
+				<td id="clip-3-2"></td>
+			</tr>
+		</table>
 	</body>
 </html>

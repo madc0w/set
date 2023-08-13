@@ -4,31 +4,10 @@
 // the link to your model provided by Teachable Machine export panel
 const URL = 'https://madc0w.github.io/set/model/';
 
-let model, webcam, maxPredictions, canvas;
+let model, webcam, maxPredictions, canvas, isDetectingCards, predictions;
 
-// Load the image model and setup the webcam
 async function start() {
-	function sizeGrid() {
-		const video = document.querySelector('video');
-		const videoSize = {
-			width: video.videoWidth,
-			height: video.videoHeight,
-		};
-		const videoStyle = (style = window.getComputedStyle(video));
-		const grid = document.getElementById('grid');
-		// const width = parseInt(videoStyle.getPropertyValue('width'));
-		const height = parseInt(videoStyle.getPropertyValue('height'));
-		grid.style.width = (height * videoSize.width) / videoSize.height + 'px';
-		grid.style.height = height + 'px';
-		// console.log('width, height', width, height);
-		// console.log('videoSize', videoSize);
-		grid.style.left =
-			(innerWidth - (height * videoSize.width) / videoSize.height) / 2 + 'px';
-	}
-
 	const video = document.querySelector('video');
-	video.addEventListener('loadedmetadata', sizeGrid);
-	window.addEventListener('resize', sizeGrid);
 
 	navigator.mediaDevices
 		.getUserMedia({
@@ -43,7 +22,6 @@ async function start() {
 			document.getElementById('start-button').classList.add('hidden');
 			document.getElementById('detect-button').classList.remove('hidden');
 			document.getElementById('video-container').classList.remove('hidden');
-			document.getElementById('grid').classList.remove('hidden');
 			return navigator.mediaDevices.enumerateDevices();
 		})
 		// .then((gotDevices) => {
@@ -53,43 +31,67 @@ async function start() {
 			console.error('Error accessing media devices.', error);
 		});
 
+	canvas = document.getElementById('video-canvas');
 	setInterval(() => {
-		canvas = document.getElementById('canvas');
 		const context = canvas.getContext('2d');
-		context.drawImage(video, 0, 0, canvas.width, canvas.height);
+		context.font = '32px Arial';
+		context.style = '#000';
+		if (isDetectingCards) {
+			for (let x = 0; x < 4; x++) {
+				for (let y = 0; y < 3; y++) {
+					const prediction = predictions[`${x}-${y}`];
+					// console.log(prediction);
+					context.fillStyle = '#fff';
+					context.fillRect(
+						(x * canvas.width) / 4,
+						(y * canvas.height) / 3 + 40,
+						200,
+						60
+					);
+					context.fillStyle = '#000';
+					console.log(`${x} ${y}`, prediction[0]);
+					context.fillText(
+						`${prediction[0].className} ${prediction[0].probability.toFixed(
+							2
+						)}`,
+						(x * canvas.width) / 4 + 8,
+						(y * canvas.height) / 3 + 80
+					);
+				}
+			}
+		} else {
+			context.drawImage(video, 0, 0, canvas.width, canvas.height);
+		}
+
+		for (let x = 1; x < 4; x++) {
+			context.beginPath();
+			context.moveTo((x * canvas.width) / 4, 0);
+			context.lineTo((x * canvas.width) / 4, canvas.height);
+			context.stroke();
+		}
+		for (let y = 1; y < 3; y++) {
+			context.beginPath();
+			context.moveTo(0, (y * canvas.height) / 3);
+			context.lineTo(canvas.width, (y * canvas.height) / 3);
+			context.stroke();
+		}
 	}, 80);
 
 	const modelURL = URL + 'model.json';
 	const metadataURL = URL + 'metadata.json';
 
-	// load the model and metadata
 	// Refer to tmImage.loadFromFiles() in the API to support files from a file picker
 	// or files from your local hard drive
 	// Note: the pose library adds "tmImage" object to your window (window.tmImage)
 	model = await tmImage.load(modelURL, metadataURL);
 	maxPredictions = model.getTotalClasses();
-
-	// // Convenience function to setup a webcam
-	// const flip = true; // whether to flip the webcam
-	// webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
-	// await webcam.setup(); // request access to the webcam
-	// await webcam.play();
-	// window.requestAnimationFrame(loop);
-
-	// // append elements to the DOM
-	// // document.getElementById('webcam-container').appendChild(webcam.canvas);
-	// labelContainer = document.getElementById('label-container');
-	// for (let i = 0; i < maxPredictions; i++) {
-	// 	// and class labels
-	// 	labelContainer.appendChild(document.createElement('div'));
-	// }
 }
 
 async function detectCards() {
-	const maxWidth = 536;
-	const maxHeight = 400;
-	const width = maxWidth / 4;
-	const height = maxHeight / 3;
+	const width = canvas.width / 4;
+	const height = canvas.height / 3;
+
+	predictions = {};
 	for (let x = 0; x < 4; x++) {
 		for (let y = 0; y < 3; y++) {
 			const clip = getClippedCanvas(
@@ -99,34 +101,32 @@ async function detectCards() {
 				width,
 				height
 			);
-			const prediction = await predict(clip);
-			console.log(x, y, prediction);
+			document.getElementById(`clip-${x}-${y}`).appendChild(clip.image);
+			predictions[`${x}-${y}`] = await predict(clip.canvas);
+			// console.log(x, y, prediction);
 		}
 	}
+	isDetectingCards = true;
+	// document.getElementById('clips').classList.remove('hidden');
 }
 
-// async function loop() {
-// 	// webcam.update(); // update the webcam frame
-// 	await predict();
-// 	window.requestAnimationFrame(loop);
-// }
-
-// run the webcam image through the image model
 async function predict(input) {
 	// predict can take in an image, video or canvas html element
 	if (input) {
-		const prediction = await model.predict(input);
-		let maxProb = {
-			label: null,
-			prob: 0,
-		};
-		for (let i = 0; i < maxPredictions; i++) {
-			if (prediction[i].probability > maxProb.prob) {
-				maxProb.prob = prediction[i].probability;
-				maxProb.label = prediction[i].className;
-			}
-		}
-		return maxProb;
+		const predictions = await model.predict(input);
+		predictions.sort((a, b) => (a.probability > b.probability ? 1 : -1));
+		return predictions;
+		// let maxProb = {
+		// 	label: null,
+		// 	prob: 0,
+		// };
+		// for (let i = 0; i < maxPredictions; i++) {
+		// 	if (predictions[i].probability > maxProb.prob) {
+		// 		maxProb.prob = predictions[i].probability;
+		// 		maxProb.label = predictions[i].className;
+		// 	}
+		// }
+		// return maxProb;
 		// document.getElementById('prediction').innerHTML = `${
 		// 	maxProb.label
 		// } (${maxProb.prob.toFixed(2)})`;
@@ -134,21 +134,15 @@ async function predict(input) {
 }
 
 function getClippedCanvas(sourceCanvas, x, y, width, height) {
-	// Create a temporary canvas
 	const tempCanvas = document.createElement('canvas');
 	tempCanvas.width = width;
 	tempCanvas.height = height;
-
-	// Get the context of the temporary canvas
 	const tempCtx = tempCanvas.getContext('2d');
-
-	// Draw the image to the temporary canvas
 	tempCtx.drawImage(sourceCanvas, x, y, width, height, 0, 0, width, height);
-	return tempCanvas;
-
-	// // Create a new image element
-	// const image = new Image();
-	// // Set the source of the image to the data URL of the temporary canvas
-	// image.src = tempCanvas.toDataURL();
-	// return image;
+	const image = new Image();
+	image.src = tempCanvas.toDataURL();
+	return {
+		canvas: tempCanvas,
+		image,
+	};
 }
