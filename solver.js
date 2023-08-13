@@ -1,7 +1,7 @@
 // More API functions here:
 // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
 
-let model, webcam, maxPredictions, canvas, predictions;
+let model, webcam, maxPredictions, canvas, predictions, chosenCard;
 let detectedCards = {};
 
 async function start() {
@@ -47,6 +47,9 @@ async function start() {
 				detectedCards[detectedCard] = predictions;
 				renderDetectedCards();
 			}
+			if (Object.keys(detectedCards).length == 12) {
+				document.getElementById('solve-button').classList.remove('hidden');
+			}
 		}
 	}, 80);
 
@@ -85,6 +88,48 @@ function getClippedCanvas(sourceCanvas, x, y, width, height) {
 	};
 }
 
+function solve() {
+	const cards = Object.keys(detectedCards);
+	const set = findSet(cards);
+	if (set) {
+		for (const card of set) {
+			document
+				.getElementById(`detected-card-${card}`)
+				.classList.add('set-card');
+		}
+	} else {
+		openModal('no-set-modal');
+	}
+}
+
+function getAttributes(card) {
+	return [
+		'123'.indexOf(card[0]),
+		'fos'.indexOf(card[1]),
+		'gpr'.indexOf(card[2]),
+		'dos'.indexOf(card[3]),
+	];
+}
+
+function findSet(cards) {
+	for (const card1 of cards) {
+		const attributes1 = getAttributes(card1);
+		for (const card2 of cards) {
+			if (card1 != card2) {
+				const attributes2 = getAttributes(card2);
+				const card3 =
+					'123'[(3 - ((attributes1[0] + attributes2[0]) % 3)) % 3] +
+					'fos'[(3 - ((attributes1[1] + attributes2[1]) % 3)) % 3] +
+					'gpr'[(3 - ((attributes1[2] + attributes2[2]) % 3)) % 3] +
+					'dos'[(3 - ((attributes1[3] + attributes2[3]) % 3)) % 3];
+				if (cards.includes(card3)) {
+					return [card1, card2, card3];
+				}
+			}
+		}
+	}
+}
+
 function renderDetectedCards() {
 	const detectedCardsTable = document.getElementById('detected-cards-table');
 	let html = '<tr>';
@@ -109,6 +154,7 @@ function renderDetectedCards() {
 }
 
 function chooseCard(card) {
+	chosenCard = card;
 	openModal('choose-card-modal');
 
 	const cardChoicesTable = document.getElementById('card-choices-table');
@@ -143,6 +189,12 @@ function replaceCard(card, replacementCard) {
 	}
 	closeModals();
 	renderDetectedCards();
+}
+
+function deleteCard() {
+	delete detectedCards[chosenCard];
+	renderDetectedCards();
+	closeModals();
 }
 
 function openModal(id) {

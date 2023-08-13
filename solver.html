@@ -21,10 +21,6 @@
 				cursor: pointer;
 			}
 
-			#headline {
-				font-weight: bold;
-			}
-
 			.hidden {
 				display: none;
 			}
@@ -62,6 +58,13 @@
 				border-radius: 12px;
 				border-width: 2px;
 				border-color: black;
+				text-align: center;
+			}
+
+			#detected-cards-table td .set-card {
+				border-width: 6px;
+				border-color: red;
+				border-style: solid;
 			}
 
 			#card-choices-container {
@@ -72,6 +75,14 @@
 			#card-choices-table td img {
 				width: 120px;
 				cursor: pointer;
+			}
+
+			#delete-card-icon {
+				cursor: pointer;
+				height: 36px;
+				float: right;
+				margin-right: 12px;
+				margin-left: 12px;
 			}
 
 			.modal {
@@ -100,7 +111,7 @@
 		<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 
-		<div id="headline">Set Solver</div>
+		<div class="headline">Set Solver</div>
 
 		<div id="video-container" class="hidden">
 			<video class="hidden" autoplay></video>
@@ -108,16 +119,31 @@
 		</div>
 		<div id="controls-container">
 			<button id="start-button" type="button" onclick="start()">Start</button>
+			<button id="solve-button" type="button" class="hidden" onclick="solve()">
+				Solve it!
+			</button>
 		</div>
 		<div id="detected-cards-container">
 			<table id="detected-cards-table"></table>
 		</div>
 
 		<div id="choose-card-modal" class="modal">
-			<div class="headline">Choose Card</div>
+			<div class="headline">
+				Choose Card
+				<img
+					id="delete-card-icon"
+					src="img/trash-icon.png"
+					onclick="deleteCard()"
+				/>
+			</div>
 			<div id="card-choices-container">
 				<table id="card-choices-table"></table>
 			</div>
+		</div>
+
+		<div id="no-set-modal" class="modal">
+			<div class="headline">No Set Here!</div>
+			<div>Life sucks, but at least it's not you're fault.</div>
 		</div>
 	</body>
 </html>
