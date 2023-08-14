@@ -56,6 +56,8 @@ async function start() {
 
 	// the link to model provided by Teachable Machine export panel
 	const baseUrl = 'https://madc0w.github.io/set/model/model2/';
+	// const baseUrl =
+	// 	'https://raw.githubusercontent.com/madc0w/set/main/model/model2/';
 	const modelURL = baseUrl + 'model.json';
 	const metadataURL = baseUrl + 'metadata.json';
 
@@ -195,6 +197,7 @@ function replaceCard(card, replacementCard) {
 function deleteCard() {
 	delete detectedCards[chosenCard];
 	renderDetectedCards();
+	document.getElementById('solve-button').classList.add('hidden');
 	closeModals();
 }
 
