@@ -1,7 +1,8 @@
-// More API functions here:
 // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
 
-let model, webcam, maxPredictions, canvas, predictions, chosenCard;
+const probabilityThreshold = 0.88;
+
+let model, webcam, maxPredictions, canvas, chosenCard;
 let detectedCards = {};
 
 async function start() {
@@ -40,13 +41,12 @@ async function start() {
 			const predictions = await predict(canvas);
 			// console.log('best prediction', predictions[0]);
 			if (
-				predictions[0].probability > 0.9 &&
+				predictions[0].probability > probabilityThreshold &&
 				Object.keys(detectedCards).length < 12
 			) {
 				const detectedCard = predictions[0].className;
 				// console.log('detected ', detectedCard);
-				detectedCards[detectedCard] = predictions;
-				renderDetectedCards();
+				showCardDetectedModal(detectedCard, predictions);
 			}
 			if (Object.keys(detectedCards).length == 12) {
 				document.getElementById('solve-button').classList.remove('hidden');
@@ -201,8 +201,23 @@ function deleteCard() {
 	closeModals();
 }
 
+function showCardDetectedModal(card, predictions) {
+	document.getElementById(
+		'detected-card'
+	).innerHTML = `<img src="img/${card}.jpg"/>`;
+	document.getElementById('accept-detected-card').onclick = () => {
+		detectedCards[card] = predictions;
+		renderDetectedCards();
+		closeModals();
+	};
+	document.getElementById('reject-detected-card').onclick = () => {
+		closeModals();
+	};
+	openModal('card-detected-modal');
+}
+
 function reset() {
-	detectedCards = [];
+	detectedCards = {};
 	renderDetectedCards();
 }
 

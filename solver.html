@@ -16,8 +16,9 @@
 			button {
 				border-radius: 8px;
 				padding: 8px;
-				width: 96vw;
-				margin: 8px;
+				width: 100%;
+				/* margin: 8px; */
+				margin-bottom: 8px;
 				cursor: pointer;
 				font-weight: bold;
 				font-size: larger;
@@ -87,6 +88,16 @@
 				margin-left: 12px;
 			}
 
+			#detected-card {
+				text-align: center;
+				margin-bottom: 8px;
+				cursor: pointer;
+			}
+
+			#detected-card img {
+				height: 80px;
+			}
+
 			#version {
 				font-size: small;
 				text-align: right;
@@ -111,6 +122,7 @@
 			.headline {
 				font-weight: bold;
 				text-align: center;
+				margin-bottom: 8px;
 			}
 		</style>
 	</head>
@@ -136,7 +148,7 @@
 		<div id="detected-cards-container">
 			<table id="detected-cards-table"></table>
 		</div>
-		<div id="version">v0.2.1</div>
+		<div id="version">v0.2.3</div>
 
 		<div id="choose-card-modal" class="modal">
 			<div class="headline">
@@ -160,6 +172,15 @@
 			</div>
 			<div>
 				<button id="reset-button" onclick="reset()">Reset Everything</button>
+			</div>
+		</div>
+
+		<div id="card-detected-modal" class="modal">
+			<div class="headline">Card Detected</div>
+			<div id="detected-card"></div>
+			<div>
+				<button id="accept-detected-card">Accept</button>
+				<button id="reject-detected-card">Reject</button>
 			</div>
 		</div>
 	</body>
