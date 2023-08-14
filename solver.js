@@ -1,8 +1,14 @@
 // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
 
-const probabilityThreshold = 0.88;
+const probabilityThreshold = 0.92;
 
-let model, webcam, maxPredictions, canvas, chosenCard;
+let model,
+	webcam,
+	maxPredictions,
+	canvas,
+	chosenCard,
+	predictions,
+	isVideoPaused;
 let detectedCards = {};
 
 async function start() {
@@ -32,21 +38,24 @@ async function start() {
 
 	canvas = document.getElementById('video-canvas');
 	setInterval(async () => {
+		if (isVideoPaused) {
+			return;
+		}
 		const context = canvas.getContext('2d');
 		context.font = '32px Arial';
 		context.style = '#000';
 		context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
 		if (model) {
-			const predictions = await predict(canvas);
+			await predict(canvas);
 			// console.log('best prediction', predictions[0]);
 			if (
 				predictions[0].probability > probabilityThreshold &&
 				Object.keys(detectedCards).length < 12
 			) {
-				const detectedCard = predictions[0].className;
+				// const detectedCard = predictions[0].className;
 				// console.log('detected ', detectedCard);
-				showCardDetectedModal(detectedCard, predictions);
+				showCardDetectedModal(predictions);
 			}
 			if (Object.keys(detectedCards).length == 12) {
 				document.getElementById('solve-button').classList.remove('hidden');
@@ -71,9 +80,8 @@ async function start() {
 async function predict(input) {
 	// predict can take in an image, video or canvas html element
 	if (input) {
-		const predictions = await model.predict(input);
+		predictions = await model.predict(input);
 		predictions.sort((a, b) => (a.probability < b.probability ? 1 : -1));
-		return predictions;
 	}
 }
 
@@ -134,7 +142,7 @@ function findSet(cards) {
 }
 
 function renderDetectedCards() {
-	const detectedCardsTable = document.getElementById('detected-cards-table');
+	const detectedCardsTable = document.querySelector('#detected-cards-table');
 	let html = '<tr>';
 	let i = 0;
 	const detectedCardsArray = Object.keys(detectedCards);
@@ -201,19 +209,33 @@ function deleteCard() {
 	closeModals();
 }
 
-function showCardDetectedModal(card, predictions) {
-	document.getElementById(
-		'detected-card'
-	).innerHTML = `<img src="img/${card}.jpg"/>`;
-	document.getElementById('accept-detected-card').onclick = () => {
-		detectedCards[card] = predictions;
-		renderDetectedCards();
-		closeModals();
-	};
+function showCardDetectedModal(predictions) {
+	isVideoPaused = true;
 	document.getElementById('reject-detected-card').onclick = () => {
+		isVideoPaused = false;
 		closeModals();
 	};
+
+	const cardChoicesTable = document.getElementById(
+		'detected-card-choices-table'
+	);
+	let html = '';
+	for (const prediction of predictions) {
+		html += `<tr><td><img src="img/${
+			prediction.className
+		}.jpg" onclick="chooseDetectedCard('${prediction.className}')"/></td><td>${(
+			100 * prediction.probability
+		).toFixed(1)}%</td></tr>`;
+	}
+	cardChoicesTable.innerHTML = html;
 	openModal('card-detected-modal');
+}
+
+function chooseDetectedCard(card) {
+	detectedCards[card] = predictions;
+	renderDetectedCards();
+	closeModals();
+	isVideoPaused = false;
 }
 
 function reset() {

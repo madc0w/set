@@ -92,6 +92,8 @@
 				text-align: center;
 				margin-bottom: 8px;
 				cursor: pointer;
+				height: 322px;
+				overflow-y: auto;
 			}
 
 			#detected-card img {
@@ -177,9 +179,10 @@
 
 		<div id="card-detected-modal" class="modal">
 			<div class="headline">Card Detected</div>
-			<div id="detected-card"></div>
+			<div id="detected-card">
+				<table id="detected-card-choices-table"></table>
+			</div>
 			<div>
-				<button id="accept-detected-card">Accept</button>
 				<button id="reject-detected-card">Reject</button>
 			</div>
 		</div>
