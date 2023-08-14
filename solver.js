@@ -55,7 +55,7 @@ async function start() {
 	}, 80);
 
 	// the link to model provided by Teachable Machine export panel
-	const baseUrl = 'https://madc0w.github.io/set/model/';
+	const baseUrl = 'https://madc0w.github.io/set/model/model2/';
 	const modelURL = baseUrl + 'model.json';
 	const metadataURL = baseUrl + 'metadata.json';
 
