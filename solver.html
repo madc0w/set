@@ -17,11 +17,12 @@
 				border-radius: 8px;
 				padding: 8px;
 				width: 100%;
+				min-height: 64px;
 				/* margin: 8px; */
 				margin-bottom: 8px;
 				cursor: pointer;
 				font-weight: bold;
-				font-size: larger;
+				font-size: 42px;
 			}
 
 			.hidden {
@@ -31,21 +32,23 @@
 			#video-canvas {
 				border-radius: 8px;
 				width: 90vw;
-				height: calc(100vh - 520px);
+				height: calc(100vh - 620px);
 				margin-left: 5vw;
 				margin-top: 8px;
 			}
 
 			#controls-container {
-				height: 60px;
 				display: flex;
+				margin-top: 8px;
 			}
 
-			#detected-cards-container {
+			#no-set-modal {
+				height: 220px;
 			}
 
 			#detected-cards-container img {
 				height: 80px;
+				width: 120px;
 				cursor: pointer;
 				border-radius: 12px;
 			}
@@ -72,11 +75,11 @@
 
 			#card-choices-container {
 				overflow-y: scroll;
-				height: 382px;
+				height: 572px;
 			}
 
 			#card-choices-table td img {
-				width: 120px;
+				width: 160px;
 				cursor: pointer;
 			}
 
@@ -92,12 +95,13 @@
 				text-align: center;
 				margin-bottom: 8px;
 				cursor: pointer;
-				height: 322px;
+				height: 500px;
 				overflow-y: auto;
 			}
 
 			#detected-card img {
-				height: 80px;
+				height: 100px;
+				width: 160px;
 			}
 
 			#version {
@@ -110,7 +114,7 @@
 				position: absolute;
 				top: 10vh;
 				left: calc(50vw - 150px);
-				height: 400px;
+				height: 600px;
 				width: 300px;
 				border-radius: 8px;
 				border-style: solid;
@@ -150,7 +154,7 @@
 		<div id="detected-cards-container">
 			<table id="detected-cards-table"></table>
 		</div>
-		<div id="version">v0.2.4</div>
+		<div id="version">v0.2.6</div>
 
 		<div id="choose-card-modal" class="modal">
 			<div class="headline">
@@ -169,9 +173,10 @@
 		<div id="no-set-modal" class="modal">
 			<div class="headline">No Set Here!</div>
 			<div>
-				Life sucks, but at least it's not you're fault.<br />
+				Life sucks, but at least it's not your fault.<br />
 				It's OK to cry.
 			</div>
+			<br /><br />
 			<div>
 				<button id="reset-button" onclick="reset()">Reset Everything</button>
 			</div>

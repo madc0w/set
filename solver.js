@@ -12,6 +12,7 @@ let model,
 let detectedCards = {};
 
 async function start() {
+	// openModal('no-set-modal');
 	const video = document.querySelector('video');
 
 	navigator.mediaDevices
@@ -210,12 +211,7 @@ function deleteCard() {
 }
 
 function showCardDetectedModal(predictions) {
-	isVideoPaused = true;
-	document.getElementById('reject-detected-card').onclick = () => {
-		isVideoPaused = false;
-		closeModals();
-	};
-
+	document.getElementById('reject-detected-card').onclick = closeModals;
 	const cardChoicesTable = document.getElementById(
 		'detected-card-choices-table'
 	);
@@ -235,7 +231,6 @@ function chooseDetectedCard(card) {
 	detectedCards[card] = predictions;
 	renderDetectedCards();
 	closeModals();
-	isVideoPaused = false;
 }
 
 function reset() {
@@ -244,10 +239,12 @@ function reset() {
 }
 
 function openModal(id) {
+	isVideoPaused = true;
 	document.getElementById(id).style.display = 'block';
 }
 
 function closeModals() {
+	isVideoPaused = false;
 	const modals = document.getElementsByClassName('modal');
 	let i = 0;
 	do {
