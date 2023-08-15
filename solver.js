@@ -313,6 +313,7 @@ function openModal(id) {
 
 function closeModals() {
 	isVideoPaused = false;
+	lastDetectionTime = new Date();
 	const modals = document.getElementsByClassName('modal');
 	let i = 0;
 	do {
