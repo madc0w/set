@@ -1,6 +1,6 @@
 // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
 
-const version = 'v0.2.11';
+const version = 'v0.2.12';
 const probabilityThreshold = 0.92;
 const detectionDelay = 1600;
 
