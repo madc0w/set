@@ -1,7 +1,8 @@
 // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
 
+const version = 'v0.2.11';
 const probabilityThreshold = 0.92;
-const detectionDelay = 1200;
+const detectionDelay = 1600;
 
 let model,
 	webcam,
@@ -12,6 +13,10 @@ let model,
 	lastDetectionTime = 0,
 	isVideoPaused = true;
 let detectedCards = [];
+
+function load() {
+	document.getElementById('version').innerHTML = version;
+}
 
 async function start() {
 	// openModal('no-set-modal');
@@ -161,7 +166,7 @@ function renderDetectedCards() {
 	let i = 0;
 	const detectedCardsArray = [];
 	for (const card of detectedCards) {
-		card && detectedCardsArray.push(card.card);
+		detectedCardsArray.push(card?.card);
 	}
 
 	while (detectedCardsArray.length < 12) {

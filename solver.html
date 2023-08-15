@@ -22,6 +22,8 @@
 				cursor: pointer;
 				font-weight: bold;
 				font-size: 42px;
+				margin-left: 4px;
+				margin-right: 4px;
 			}
 
 			.hidden {
@@ -62,6 +64,10 @@
 				margin-top: 8px;
 			}
 
+			#card-detected-modal {
+				height: 800px;
+			}
+
 			#no-set-modal {
 				height: 220px;
 			}
@@ -100,29 +106,30 @@
 			}
 
 			#card-choices-table td img {
-				width: 160px;
+				height: 160px;
+				width: 220px;
 				cursor: pointer;
 			}
 
 			#delete-card-icon {
 				cursor: pointer;
 				height: 36px;
-				float: right;
+				position: absolute;
 				margin-right: 12px;
-				margin-left: 12px;
+				margin-left: 64px;
 			}
 
 			#detected-card {
 				text-align: center;
 				margin-bottom: 8px;
 				cursor: pointer;
-				height: 450px;
+				height: 700px;
 				overflow-y: auto;
 			}
 
 			#detected-card img {
-				height: 100px;
-				width: 160px;
+				height: 160px;
+				width: 220px;
 			}
 
 			#version {
@@ -153,7 +160,7 @@
 			}
 		</style>
 	</head>
-	<body>
+	<body onload="load()">
 		<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 
@@ -182,7 +189,7 @@
 		<div id="detected-cards-container">
 			<table id="detected-cards-table"></table>
 		</div>
-		<div id="version">v0.2.10</div>
+		<div id="version"></div>
 
 		<div id="choose-card-modal" class="modal">
 			<div class="headline">
@@ -216,7 +223,7 @@
 				<table id="detected-card-choices-table"></table>
 			</div>
 			<div>
-				<button id="reject-detected-card">Nope. Try again.</button>
+				<button id="reject-detected-card">Try again</button>
 			</div>
 		</div>
 
