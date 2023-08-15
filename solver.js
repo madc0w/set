@@ -1,6 +1,6 @@
 // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
 
-const version = 'v0.2.12';
+const version = 'v0.2.13';
 const probabilityThreshold = 0.92;
 const detectionDelay = 1600;
 
@@ -10,16 +10,16 @@ let model,
 	canvas,
 	chosenCard,
 	predictions,
-	lastDetectionTime = 0,
+	lastDetectionTime = new Date(),
 	isVideoPaused = true;
 let detectedCards = [];
 
 function load() {
 	document.getElementById('version').innerHTML = version;
+	// openModal('no-set-modal');
 }
 
 async function start() {
-	// openModal('no-set-modal');
 	reset();
 	const video = document.querySelector('video');
 
@@ -37,9 +37,6 @@ async function start() {
 			document.getElementById('reset-button').classList.remove('hidden');
 			document.getElementById('video-container').classList.remove('hidden');
 			renderDetectedCards();
-			setTimeout(() => {
-				isVideoPaused = false;
-			}, 400);
 			return navigator.mediaDevices.enumerateDevices();
 		})
 		// .then((gotDevices) => {
@@ -215,6 +212,10 @@ function chooseCard(card) {
 		}
 	}
 	cardChoicesTable.innerHTML = html;
+	setTimeout(() => {
+		const el = document.getElementById('card-choices-container');
+		el.scroll(0, 0);
+	}, 20);
 }
 
 function replaceCard(card, replacementCard) {
@@ -274,6 +275,11 @@ function showCardDetectedModal(predictions) {
 		).toFixed(1)}%</td></tr>`;
 	}
 	cardChoicesTable.innerHTML = html;
+
+	setTimeout(() => {
+		const el = document.getElementById('detected-card');
+		el.scroll(0, 0);
+	}, 20);
 	openModal('card-detected-modal');
 }
 
