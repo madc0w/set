@@ -49,14 +49,15 @@ async function start() {
 
 		if (model) {
 			await predict(canvas);
-			// console.log('best prediction', predictions[0]);
 			if (
 				predictions[0].probability > probabilityThreshold &&
 				Object.keys(detectedCards).length < 12
 			) {
-				// const detectedCard = predictions[0].className;
+				const detectedCard = predictions[0].className;
 				// console.log('detected ', detectedCard);
-				showCardDetectedModal(predictions);
+				if (!detectedCards[detectedCard]) {
+					showCardDetectedModal(predictions);
+				}
 			}
 			if (Object.keys(detectedCards).length == 12) {
 				document.getElementById('solve-button').classList.remove('hidden');
