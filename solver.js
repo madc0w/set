@@ -1,6 +1,7 @@
 // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
 
 const probabilityThreshold = 0.92;
+const detectionDelay = 1200;
 
 let model,
 	webcam,
@@ -8,11 +9,13 @@ let model,
 	canvas,
 	chosenCard,
 	predictions,
+	lastDetectionTime = 0,
 	isVideoPaused = true;
-let detectedCards = {};
+let detectedCards = [];
 
 async function start() {
 	// openModal('no-set-modal');
+	reset();
 	const video = document.querySelector('video');
 
 	navigator.mediaDevices
@@ -54,16 +57,18 @@ async function start() {
 		if (model) {
 			await predict(canvas);
 			if (
+				new Date() - lastDetectionTime > detectionDelay &&
 				predictions[0].probability > probabilityThreshold &&
-				Object.keys(detectedCards).length < 12
+				detectedCards.filter((c) => c).length < 12
 			) {
+				lastDetectionTime = new Date();
 				const detectedCard = predictions[0].className;
 				// console.log('detected ', detectedCard);
-				if (!detectedCards[detectedCard]) {
+				if (!detectedCards.find((c) => c?.card == detectedCard)) {
 					showCardDetectedModal(predictions);
 				}
 			}
-			if (Object.keys(detectedCards).length == 12) {
+			if (detectedCards.filter((c) => c).length == 12) {
 				document.getElementById('solve-button').classList.remove('hidden');
 			}
 		}
@@ -106,7 +111,10 @@ function getClippedCanvas(sourceCanvas, x, y, width, height) {
 }
 
 function solve() {
-	const cards = Object.keys(detectedCards);
+	const cards = [];
+	for (const card of detectedCards) {
+		card && cards.push(card.card);
+	}
 	const set = findSet(cards);
 	if (set) {
 		for (const card of set) {
@@ -151,7 +159,11 @@ function renderDetectedCards() {
 	const detectedCardsTable = document.querySelector('#detected-cards-table');
 	let html = '<tr>';
 	let i = 0;
-	const detectedCardsArray = Object.keys(detectedCards);
+	const detectedCardsArray = [];
+	for (const card of detectedCards) {
+		card && detectedCardsArray.push(card.card);
+	}
+
 	while (detectedCardsArray.length < 12) {
 		detectedCardsArray.push(null);
 	}
@@ -176,8 +188,9 @@ function chooseCard(card) {
 
 	const cardChoicesTable = document.getElementById('card-choices-table');
 	let html = '';
-	if (detectedCards[card]) {
-		for (const prediction of detectedCards[card]) {
+	const detectedCard = detectedCards.find((c) => c.card == card);
+	if (detectedCard?.predictions) {
+		for (const prediction of detectedCard.predictions) {
 			html += `<tr><td><img src="img/${
 				prediction.className
 			}.jpg" id="detected-card-${card}" onclick="replaceCard('${card}', '${
@@ -200,16 +213,43 @@ function chooseCard(card) {
 }
 
 function replaceCard(card, replacementCard) {
-	delete detectedCards[card];
-	if (!detectedCards[replacementCard]) {
-		detectedCards[replacementCard] = null;
+	if (card != replacementCard) {
+		{
+			let i = 0;
+			for (const _card of detectedCards) {
+				if (_card?.card == replacementCard) {
+					detectedCards[i] = null;
+					break;
+				}
+				i++;
+			}
+		}
+		{
+			let i = 0;
+			for (const _card of detectedCards) {
+				if (_card?.card == card) {
+					detectedCards[i] = {
+						card: replacementCard,
+					};
+					break;
+				}
+				i++;
+			}
+		}
+		renderDetectedCards();
 	}
 	closeModals();
-	renderDetectedCards();
 }
 
 function deleteCard() {
-	delete detectedCards[chosenCard];
+	let i = 0;
+	for (const card of detectedCards) {
+		if (card?.card == chosenCard) {
+			detectedCards[i] = null;
+			break;
+		}
+		i++;
+	}
 	renderDetectedCards();
 	document.getElementById('solve-button').classList.add('hidden');
 	closeModals();
@@ -233,14 +273,32 @@ function showCardDetectedModal(predictions) {
 }
 
 function chooseDetectedCard(card) {
-	detectedCards[card] = predictions;
-	renderDetectedCards();
+	if (!detectedCards.find((c) => c?.card == card)) {
+		let i = 0;
+		for (const _card of detectedCards) {
+			if (!_card) {
+				detectedCards[i] = {
+					card,
+					predictions,
+				};
+				break;
+			}
+			i++;
+		}
+
+		renderDetectedCards();
+	}
 	closeModals();
 }
 
 function reset() {
-	detectedCards = {};
+	detectedCards = [];
+	for (let i = 0; i < 12; i++) {
+		detectedCards.push(null);
+	}
+
 	renderDetectedCards();
+	closeModals();
 }
 
 function openModal(id) {
