@@ -8,7 +8,7 @@ let model,
 	canvas,
 	chosenCard,
 	predictions,
-	isVideoPaused;
+	isVideoPaused = true;
 let detectedCards = {};
 
 async function start() {
@@ -28,6 +28,10 @@ async function start() {
 			document.getElementById('start-button').classList.add('hidden');
 			document.getElementById('reset-button').classList.remove('hidden');
 			document.getElementById('video-container').classList.remove('hidden');
+			renderDetectedCards();
+			setTimeout(() => {
+				isVideoPaused = false;
+			}, 400);
 			return navigator.mediaDevices.enumerateDevices();
 		})
 		// .then((gotDevices) => {
