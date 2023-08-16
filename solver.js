@@ -1,6 +1,6 @@
 // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
 
-const version = 'v0.2.13';
+const version = 'v0.2.14';
 const probabilityThreshold = 0.92;
 const detectionDelay = 1600;
 
@@ -11,17 +11,14 @@ let model,
 	chosenCard,
 	predictions,
 	lastDetectionTime = new Date(),
-	isVideoPaused = true;
+	isVideoPaused;
 let detectedCards = [];
 
-function load() {
-	document.getElementById('version').innerHTML = version;
-	// openModal('no-set-modal');
-}
-
-async function start() {
+async function load() {
 	reset();
+	isVideoPaused = true;
 	const video = document.querySelector('video');
+	document.getElementById('version').innerHTML = version;
 
 	navigator.mediaDevices
 		.getUserMedia({
@@ -32,8 +29,9 @@ async function start() {
 			},
 		})
 		.then((stream) => {
+			// console.log('stream', stream);
+			isVideoPaused = false;
 			video.srcObject = stream;
-			document.getElementById('start-button').classList.add('hidden');
 			document.getElementById('reset-button').classList.remove('hidden');
 			document.getElementById('video-container').classList.remove('hidden');
 			renderDetectedCards();
@@ -318,6 +316,7 @@ function openModal(id) {
 }
 
 function closeModals() {
+	// console.log('closeModals');
 	isVideoPaused = false;
 	lastDetectionTime = new Date();
 	const modals = document.getElementsByClassName('modal');
